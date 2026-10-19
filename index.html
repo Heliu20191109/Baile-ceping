@@ -498,7 +498,7 @@ var CFG = null;
 try{
   var c = window.BL_CONFIG;
   if(c && c.url && c.anon && c.url.indexOf('YOUR-') !== 0 && c.anon.indexOf('YOUR-') !== 0){
-    CFG = {url: c.url.replace(/\/+$/,''), anon: c.anon};
+    CFG = {url: c.url.replace(/\/+$/,'').replace(/\/rest\/v1$/, ''), anon: c.anon};
   }
 }catch(e){}
 var PROD = !!CFG;
