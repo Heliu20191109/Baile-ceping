@@ -13,6 +13,6 @@
 // ============================================================
 
 window.BL_CONFIG = {
-  url:  'https://vrjbzgdyenetmvprusvx.supabase.co/rest/v1',
+  url:  'https://vrjbzgdyenetmvprusvx.supabase.co',
   anon: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZyamJ6Z2R5ZW5ldG12cHJ1c3Z4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIzNzAzNzEsImV4cCI6MjEwNzk0NjM3MX0.96KPgUQXA5WI_uuTOn4XliFNJ4KFG7p9IxdydGayNpg'
 };
