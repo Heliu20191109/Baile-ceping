@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>百乐 · 电竞职业方向测评</title>
+<style>
+  :root{
+    --bg:#0b1020; --bg2:#101832; --card:#151f3d; --card2:#1a2549;
+    --line:#26315c; --ink:#eef2ff; --ink2:#a8b4d8; --ink3:#6b78a3;
+    --cyan:#22d3ee; --indigo:#6366f1; --gold:#fbbf24; --red:#f87171;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;}
+  .app{max-width:480px;margin:0 auto;min-height:100vh;background:linear-gradient(180deg,var(--bg) 0%,var(--bg2) 100%);display:flex;flex-direction:column;position:relative;}
+  .screen{display:none;flex:1;flex-direction:column;padding:28px 22px 36px;animation:fadeIn .3s ease;}
+  .screen.active{display:flex;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  input{font-family:inherit;}
+
+  .brand{display:flex;align-items:center;gap:8px;justify-content:center;margin-bottom:30px;}
+  .brand-logo{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--cyan),var(--indigo));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;color:#0b1020;}
+  .brand-name{font-size:18px;font-weight:800;letter-spacing:2px;}
+  .btn{display:block;width:100%;border:none;border-radius:14px;padding:16px;font-size:16.5px;font-weight:700;cursor:pointer;text-align:center;transition:transform .12s ease;}
+  .btn:active{transform:scale(.97);}
+  .btn:disabled{opacity:.6;pointer-events:none;}
+  .btn-primary{background:linear-gradient(90deg,var(--cyan),var(--indigo));color:#0b1020;box-shadow:0 6px 24px rgba(34,211,238,.25);}
+  .btn-ghost{background:transparent;border:1px solid var(--line);color:var(--ink2);font-weight:600;}
+  .btn-row{display:flex;gap:10px;margin-top:12px;}
+  .btn-row .btn{flex:1;font-size:14.5px;padding:14px 10px;}
+  .link-btn{background:none;border:none;color:var(--ink3);font-size:13px;text-decoration:underline;cursor:pointer;padding:8px;}
+  .toast{position:fixed;left:50%;bottom:48px;transform:translateX(-50%);background:#1a2549;border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:11px 20px;font-size:13.5px;z-index:99;opacity:0;pointer-events:none;transition:opacity .25s;max-width:86%;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,.5);}
+  .toast.show{opacity:1;}
+  .mode-badge{display:inline-block;border-radius:999px;padding:2px 12px;font-size:11px;font-weight:700;letter-spacing:1px;margin-left:8px;vertical-align:middle;}
+  .mode-prod{background:rgba(46,139,87,.18);color:#5fd39a;border:1px solid rgba(46,139,87,.4);}
+  .mode-demo{background:rgba(248,113,113,.15);color:var(--red);border:1px solid rgba(248,113,113,.4);}
+  .cfg-warn{background:rgba(248,113,113,.10);border:1px solid rgba(248,113,113,.4);border-radius:12px;padding:13px 16px;font-size:12.5px;color:#fca5a5;line-height:1.8;margin-bottom:18px;}
+
+  /* 密码屏 */
+  .pw-title{font-size:24px;font-weight:800;text-align:center;margin-bottom:10px;}
+  .pw-sub{text-align:center;color:var(--ink2);font-size:13.5px;line-height:1.8;margin-bottom:28px;}
+  .pw-input{width:100%;background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:16px;font-size:18px;color:var(--ink);text-align:center;letter-spacing:3px;font-weight:700;outline:none;margin-bottom:14px;}
+  .pw-input:focus{border-color:var(--cyan);}
+  .pw-err{color:var(--red);font-size:13px;text-align:center;min-height:20px;margin-bottom:10px;}
+  .pw-tips{background:var(--card);border:1px dashed var(--line);border-radius:12px;padding:14px 16px;font-size:12.5px;color:var(--ink3);line-height:1.8;margin-top:22px;text-align:center;}
+  .pw-tips b{color:var(--ink2);}
+  .pw-tips a{color:var(--cyan);}
+
+  /* 封面 */
+  .cover-title{font-size:30px;font-weight:800;line-height:1.35;text-align:center;margin-bottom:14px;}
+  .cover-title em{font-style:normal;background:linear-gradient(90deg,var(--cyan),var(--indigo));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .cover-sub{text-align:center;color:var(--ink2);font-size:14px;line-height:1.8;margin-bottom:26px;}
+  .chips{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:34px;}
+  .chip{border:1px solid var(--line);background:rgba(99,102,241,.08);border-radius:999px;padding:5px 14px;font-size:12.5px;color:var(--ink2);}
+  .left-badge{text-align:center;font-size:12px;color:var(--ink3);margin-bottom:18px;}
+  .left-badge b{color:var(--gold);}
+  .cover-foot{margin-top:24px;text-align:center;font-size:11.5px;color:var(--ink3);line-height:1.7;}
+
+  /* 答题 */
+  .quiz-top{display:flex;align-items:center;gap:12px;margin-bottom:8px;}
+  .back-btn{background:none;border:none;color:var(--ink3);font-size:20px;cursor:pointer;padding:4px 8px;line-height:1;}
+  .progress-wrap{flex:1;}
+  .progress-num{font-size:12px;color:var(--ink3);margin-bottom:5px;font-variant-numeric:tabular-nums;}
+  .progress-bar{height:5px;background:var(--card2);border-radius:99px;overflow:hidden;}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--indigo));border-radius:99px;transition:width .25s ease;}
+  .q-text{font-size:19px;font-weight:700;line-height:1.6;margin:26px 0 22px;}
+  .opt{display:flex;align-items:flex-start;gap:12px;background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:15px 16px;margin-bottom:12px;cursor:pointer;transition:all .15s ease;}
+  .opt:active{border-color:var(--cyan);}
+  .opt.selected{border-color:var(--cyan);background:rgba(34,211,238,.10);}
+  .opt-letter{flex:none;width:26px;height:26px;border-radius:8px;background:var(--card2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--ink2);}
+  .opt.selected .opt-letter{background:linear-gradient(135deg,var(--cyan),var(--indigo));color:#0b1020;border-color:transparent;}
+  .opt-text{font-size:14.5px;line-height:1.65;color:var(--ink);padding-top:2px;}
+
+  /* 结果 */
+  .result-head{text-align:center;margin-bottom:20px;}
+  .result-head .k{font-size:12px;color:var(--ink3);letter-spacing:2px;}
+  .result-head .t{font-size:15px;color:var(--ink2);margin-top:4px;}
+  .dir-card{background:linear-gradient(160deg,rgba(99,102,241,.18),rgba(34,211,238,.08));border:1px solid #3b4a8a;border-radius:18px;padding:26px 22px;text-align:center;margin-bottom:16px;}
+  .dir-emoji{font-size:46px;line-height:1;}
+  .dir-name{font-size:25px;font-weight:800;margin:10px 0 4px;}
+  .dir-tagline{font-size:13.5px;color:var(--cyan);font-weight:600;margin-bottom:12px;}
+  .dir-match{display:inline-block;background:rgba(34,211,238,.14);border:1px solid rgba(34,211,238,.35);color:var(--cyan);border-radius:999px;padding:3px 14px;font-size:12.5px;font-weight:700;}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:14px;}
+  .panel h3{font-size:15px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+  .panel h3::before{content:"";width:4px;height:16px;border-radius:2px;background:linear-gradient(180deg,var(--cyan),var(--indigo));}
+  .radar-wrap{display:flex;justify-content:center;margin-bottom:6px;}
+  .dim-row{display:flex;align-items:center;gap:10px;margin:9px 0;font-size:12.5px;}
+  .dim-name{width:64px;flex:none;color:var(--ink2);text-align:right;}
+  .dim-bar{flex:1;height:8px;background:var(--card2);border-radius:99px;overflow:hidden;}
+  .dim-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--cyan),var(--indigo));}
+  .dim-val{width:34px;flex:none;color:var(--ink);font-weight:700;font-variant-numeric:tabular-nums;}
+  .salary-box{display:flex;gap:10px;}
+  .salary-item{flex:1;background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:12px 10px;text-align:center;}
+  .salary-item .s-k{font-size:11.5px;color:var(--ink3);margin-bottom:4px;}
+  .salary-item .s-v{font-size:14px;font-weight:800;color:var(--gold);line-height:1.45;}
+  .salary-note{font-size:11.5px;color:var(--ink3);margin-top:10px;line-height:1.7;}
+  .path-step{display:flex;gap:12px;margin-bottom:12px;}
+  .path-n{flex:none;width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--cyan),var(--indigo));color:#0b1020;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;margin-top:2px;}
+  .path-t{font-size:13.5px;line-height:1.7;color:var(--ink);}
+  .job-chips{display:flex;flex-wrap:wrap;gap:8px;}
+  .job-chip{background:var(--card2);border:1px solid var(--line);border-radius:8px;padding:5px 12px;font-size:12.5px;color:var(--ink2);}
+  .warn-box{background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.3);border-radius:12px;padding:13px 15px;font-size:12.5px;color:#f5d98b;line-height:1.7;}
+  .second-dir{display:flex;align-items:center;gap:12px;background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-top:16px;}
+  .second-dir .e{font-size:26px;}
+  .second-dir .n{font-size:15px;font-weight:700;}
+  .second-dir .d{font-size:12px;color:var(--ink3);margin-top:2px;}
+  .disclaimer{font-size:11.5px;color:var(--ink3);line-height:1.8;text-align:center;margin:14px 0;}
+  .cta-box{background:linear-gradient(135deg,rgba(34,211,238,.12),rgba(99,102,241,.12));border:1px dashed #3b4a8a;border-radius:14px;padding:18px;text-align:center;margin-bottom:14px;}
+  .cta-box .t{font-size:14.5px;font-weight:700;margin-bottom:6px;}
+  .cta-box .d{font-size:12px;color:var(--ink2);line-height:1.7;}
+  .used-out{margin-top:12px;text-align:center;font-size:12.5px;color:var(--gold);}
+  .loading-tip{text-align:center;color:var(--ink3);font-size:13px;padding:30px 0;}
+
+  /* 分享查看页 */
+  .share-banner{background:rgba(34,211,238,.10);border:1px solid rgba(34,211,238,.3);border-radius:12px;padding:12px 16px;font-size:12.5px;color:var(--ink2);text-align:center;margin-bottom:16px;line-height:1.7;}
+
+  /* 管理后台 */
+  .admin-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+  .admin-title{font-size:18px;font-weight:800;}
+  .admin-pin-row{display:flex;gap:10px;margin-bottom:14px;}
+  .admin-input{flex:1;background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:12px;font-size:15px;color:var(--ink);outline:none;}
+  .admin-input:focus{border-color:var(--cyan);}
+  .admin-btn{background:var(--card2);border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:12px 16px;font-size:13.5px;font-weight:700;cursor:pointer;white-space:nowrap;}
+  .admin-btn.primary{background:linear-gradient(90deg,var(--cyan),var(--indigo));color:#0b1020;border:none;}
+  .admin-btn.danger{border-color:rgba(248,113,113,.4);color:var(--red);}
+  .stat-row{display:flex;gap:10px;margin-bottom:14px;}
+  .stat-box{flex:1;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center;}
+  .stat-box .v{font-size:20px;font-weight:800;color:var(--cyan);font-variant-numeric:tabular-nums;}
+  .stat-box .k{font-size:11.5px;color:var(--ink3);margin-top:3px;}
+  .code-table{width:100%;border-collapse:collapse;font-size:12.5px;}
+  .code-table th{background:var(--card2);padding:8px 8px;text-align:left;color:var(--ink2);border-bottom:1px solid var(--line);white-space:nowrap;}
+  .code-table td{padding:8px 8px;border-bottom:1px solid var(--line);color:var(--ink2);font-variant-numeric:tabular-nums;white-space:nowrap;}
+  .code-table .c{color:var(--ink);font-weight:700;letter-spacing:1px;}
+  .table-wrap{max-height:300px;overflow-y:auto;border:1px solid var(--line);border-radius:10px;}
+  .admin-sec{font-size:13px;font-weight:700;color:var(--ink3);margin:18px 0 10px;letter-spacing:1px;}
+  .admin-note{font-size:11.5px;color:var(--ink3);margin-top:16px;line-height:1.8;}
+
+  /* 海报弹层 */
+  .poster-mask{display:none;position:fixed;inset:0;background:rgba(4,8,20,.94);z-index:50;flex-direction:column;align-items:center;justify-content:center;padding:24px;overflow-y:auto;}
+  .poster-mask.show{display:flex;}
+  .poster-mask img{max-width:300px;width:100%;border-radius:14px;box-shadow:0 12px 48px rgba(0,0,0,.6);}
+  .poster-tip{color:var(--ink2);font-size:13px;margin-top:16px;text-align:center;line-height:1.7;}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- 密码屏 -->
+  <div class="screen active" id="screen-pw">
+    <div class="brand"><div class="brand-logo">百</div><div class="brand-name">百乐 BAiLE</div></div>
+    <div class="pw-title">输入测评密码</div>
+    <div class="pw-sub">每个密码可测评 3 次<br>没有密码？查看页面底部获取方式</div>
+    <input class="pw-input" id="pw-input" placeholder="请输入密码" maxlength="24" autocomplete="off">
+    <div class="pw-err" id="pw-err"></div>
+    <button class="btn btn-primary" id="pw-btn" onclick="checkPw()">进入测评</button>
+    <div class="pw-tips">
+      购买方式：<b>闲鱼 / 淘宝店铺「百乐测评」</b>（占位，上线前替换为真实链接）<br>
+      公众号「百乐」回复「测评」获取购买链接
+    </div>
+  </div>
+
+  <!-- 封面 -->
+  <div class="screen" id="screen-cover">
+    <div class="brand"><div class="brand-logo">百</div><div class="brand-name">百乐 BAiLE</div></div>
+    <div class="cover-title">你在电竞行业<br>应该站在<em>哪个位置</em>？</div>
+    <div class="cover-sub">选手不是唯一的路。<br>3 分钟，测出你更适合电竞行业的哪类岗位。</div>
+    <div class="chips">
+      <div class="chip">15 道情境题</div>
+      <div class="chip">约 3 分钟</div>
+      <div class="chip">8 类岗位方向</div>
+      <div class="chip">结果可分享</div>
+    </div>
+    <div class="left-badge" id="left-badge"></div>
+    <button class="btn btn-primary" onclick="startQuiz()">开始测评</button>
+    <div class="cover-foot">本测评反映岗位方向倾向，不构成职业承诺<br>职业选手选拔以俱乐部官方标准为准（服务器前 1% 段位、16–22 周岁）</div>
+  </div>
+
+  <!-- 答题 -->
+  <div class="screen" id="screen-quiz">
+    <div class="quiz-top">
+      <button class="back-btn" id="back-btn" onclick="prevQ()">‹</button>
+      <div class="progress-wrap">
+        <div class="progress-num" id="progress-num">第 1 / 15 题</div>
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+      </div>
+    </div>
+    <div class="q-text" id="q-text"></div>
+    <div id="q-options"></div>
+  </div>
+
+  <!-- 结果 -->
+  <div class="screen" id="screen-result">
+    <div class="result-head">
+      <div class="k">测 评 结 果</div>
+      <div class="t">综合 6 项能力倾向，你在电竞行业的最优位置是</div>
+    </div>
+    <div class="dir-card">
+      <div class="dir-emoji" id="r-emoji">🏟️</div>
+      <div class="dir-name" id="r-name"></div>
+      <div class="dir-tagline" id="r-tagline"></div>
+      <div class="dir-match" id="r-match"></div>
+    </div>
+    <div class="panel">
+      <h3>你的能力倾向雷达</h3>
+      <div class="radar-wrap" id="r-radar"></div>
+      <div id="r-dims"></div>
+    </div>
+    <div class="panel">
+      <h3>方向解读</h3>
+      <p style="font-size:13.5px;line-height:1.85;color:var(--ink2);" id="r-desc"></p>
+      <div class="second-dir">
+        <div class="e" id="r-second-emoji">🎯</div>
+        <div><div class="n" id="r-second-name"></div><div class="d" id="r-second-desc"></div></div>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>真实薪资区间</h3>
+      <div class="salary-box">
+        <div class="salary-item"><div class="s-k">入门阶段</div><div class="s-v" id="r-salary-low"></div></div>
+        <div class="salary-item"><div class="s-k">资深阶段</div><div class="s-v" id="r-salary-high"></div></div>
+      </div>
+      <p class="salary-note">数据来源：公开招聘信息与行业调研（2025）。头部岗位（明星选手、头部解说）年薪百万级，但占比极低，不具参考性。</p>
+    </div>
+    <div class="panel">
+      <h3>入行路径（三步走）</h3>
+      <div id="r-path"></div>
+    </div>
+    <div class="panel">
+      <h3>对口的在招岗位</h3>
+      <div class="job-chips" id="r-jobs"></div>
+      <div class="warn-box" id="r-warn" style="margin-top:14px;"></div>
+    </div>
+    <div class="cta-box">
+      <div class="t">📮 想知道这些岗位现在哪里在招？</div>
+      <div class="d">关注公众号「百乐」，获取电竞行业 32 类岗位的真实薪资、入行路径与在招信息</div>
+    </div>
+    <div class="disclaimer">本测评基于岗位能力倾向模型，结果仅供参考，不构成职业承诺。<br>职业选手选拔以俱乐部官方标准为准。</div>
+    <button class="btn btn-primary" onclick="makeLongImage()">保存结果长图</button>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="copyShareLink()">复制结果链接</button>
+      <button class="btn btn-ghost" onclick="reviewGift()">好评有礼</button>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="restart()">再测一次</button>
+    </div>
+    <div class="used-out" id="used-out"></div>
+  </div>
+
+  <!-- 分享查看页 -->
+  <div class="screen" id="screen-share">
+    <div class="share-banner">你的朋友做了一份「电竞职业方向测评」<br>下面是 TA 的结果 ↓</div>
+    <div class="dir-card">
+      <div class="dir-emoji" id="sh-emoji">🏟️</div>
+      <div class="dir-name" id="sh-name"></div>
+      <div class="dir-tagline" id="sh-tagline"></div>
+      <div class="dir-match" id="sh-match"></div>
+    </div>
+    <div class="panel">
+      <h3>TA 的能力倾向雷达</h3>
+      <div class="radar-wrap" id="sh-radar"></div>
+    </div>
+    <div class="cta-box">
+      <div class="t">🎮 你想知道自己适合哪个方向？</div>
+      <div class="d">3 分钟测评，找到你在电竞行业的位置</div>
+    </div>
+    <button class="btn btn-primary" onclick="gotoPw()">我也要测一次</button>
+  </div>
+
+  <!-- 管理后台 -->
+  <div class="screen" id="screen-admin">
+    <div class="admin-head">
+      <div class="admin-title">百乐测评 · 管理后台</div>
+      <button class="admin-btn" onclick="location.hash='';show('screen-pw')">退出</button>
+    </div>
+    <div id="admin-login">
+      <p style="color:var(--ink2);font-size:13.5px;margin-bottom:14px;">请输入管理口令（初始值见 schema.sql 文件，建议登录后修改）</p>
+      <div class="admin-pin-row">
+        <input class="admin-input" id="admin-token" type="password" placeholder="管理口令" maxlength="40">
+        <button class="admin-btn primary" onclick="adminLogin()">进入</button>
+      </div>
+    </div>
+    <div id="admin-body" style="display:none;">
+      <div class="stat-row">
+        <div class="stat-box"><div class="v" id="st-codes">-</div><div class="k">已生成卡密</div></div>
+        <div class="stat-box"><div class="v" id="st-tests">-</div><div class="k">累计测评次数</div></div>
+        <div class="stat-box"><div class="v" id="st-left">-</div><div class="k">剩余可用次数</div></div>
+      </div>
+      <div class="admin-sec">生成卡密</div>
+      <div class="admin-pin-row">
+        <input class="admin-input" id="gen-count" type="number" value="10" min="1" max="500" style="max-width:90px;">
+        <input class="admin-input" id="gen-limit" type="number" value="3" min="1" max="99" style="max-width:90px;">
+        <input class="admin-input" id="gen-prefix" placeholder="前缀(选填)" maxlength="6" style="flex:1;">
+        <button class="admin-btn primary" onclick="genCodes()">生成</button>
+      </div>
+      <p style="font-size:11.5px;color:var(--ink3);margin-bottom:6px;">数量｜每码限次｜前缀</p>
+      <div class="admin-sec">卡密列表</div>
+      <div class="table-wrap">
+        <table class="code-table">
+          <thead><tr><th>#</th><th>卡密</th><th>剩余/限次</th><th>已用</th><th>创建时间</th></tr></thead>
+          <tbody id="code-tbody"></tbody>
+        </table>
+      </div>
+      <div class="btn-row">
+        <button class="admin-btn primary" style="flex:1;" onclick="exportCSV()">导出 CSV</button>
+        <button class="admin-btn" style="flex:1;" onclick="changeToken()">修改口令</button>
+      </div>
+      <p class="admin-note">
+        管理口令是后台唯一凭证，请勿外传。导出的 CSV 可直接导入闲鱼/淘宝自动发货工具。<br>
+        如忘记口令：Supabase → SQL Editor → 执行 <span style="color:#a8b4d8;">update settings set admin_token='新口令' where id=1;</span> 重置。
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- 海报弹层 -->
+<div class="poster-mask" id="poster-mask">
+  <img id="poster-img" alt="结果长图">
+  <div class="poster-tip">长按图片保存 / 发送给朋友<br>截图后分享到群或朋友圈也可以</div>
+  <div class="btn-row" style="width:100%;max-width:300px;">
+    <button class="btn btn-ghost" onclick="closePoster()">关闭</button>
+  </div>
+</div>
+
+<!-- 配置文件：Supabase 地址与 anon key（部署时填写） -->
+<script src="./config.js"></script>
+
+<script>
+/* ================= 测评数据（15 题 / 6 维度 / 8 方向） ================= */
+var DIMS = [
+  {key:'C', name:'内容创作'},
+  {key:'D', name:'数据分析'},
+  {key:'O', name:'组织协调'},
+  {key:'E', name:'表达解说'},
+  {key:'T', name:'技术执行'},
+  {key:'R', name:'抗压作息'}
+];
+
+var QUESTIONS = [
+  {q:'看完一场精彩的职业比赛，你最可能做的事是：', opts:[
+    {t:'逐帧复盘，分析这波团战怎么打能赢', s:{D:2,T:1}},
+    {t:'剪一个高光集锦发到网上', s:{C:2,E:1}},
+    {t:'在社群里组织大家线下一起看下一场', s:{O:2,E:1}},
+    {t:'模仿这波操作，开一盘练手', s:{T:2,R:1}}
+  ]},
+  {q:'朋友说"这周末帮我搞个校园比赛"，你的第一反应是：', opts:[
+    {t:'先问预算多少、场地多大、奖品谁出', s:{O:2,D:1}},
+    {t:'已经在想赛制怎么设计才公平', s:{O:2,D:1}},
+    {t:'先拉群，能拉来人就行', s:{O:1,E:2}},
+    {t:'我可以当解说把气氛搞起来', s:{E:2,T:1}}
+  ]},
+  {q:'以下哪种工作状态，你更能忍受？', opts:[
+    {t:'盯 8 小时数据报表找规律', s:{D:2,R:2}},
+    {t:'一天拍剪 3 条视频不重样', s:{C:2,R:1}},
+    {t:'同时对接 10 个群、回 200 条消息', s:{O:2,R:2}},
+    {t:'在 500 人面前讲话不怵', s:{E:2,R:1}}
+  ]},
+  {q:'五个人开黑输了，你通常会：', opts:[
+    {t:'拉大家逐局复盘，找问题出在哪', s:{D:2,O:1}},
+    {t:'讲个段子把气氛拉回来', s:{E:2,O:1}},
+    {t:'默默把下局该做的调整列出来', s:{T:2,D:1}},
+    {t:'无所谓，下把干回来', s:{R:2,T:1}}
+  ]},
+  {q:'哪件事让你最有成就感？', opts:[
+    {t:'做的内容被疯狂转发', s:{C:2}},
+    {t:'从一堆数据里发现别人没注意的规律', s:{D:2}},
+    {t:'把一群散人组织成有战斗力的队伍', s:{O:2}},
+    {t:'站在台上把比赛讲得全场沸腾', s:{E:2}}
+  ]},
+  {q:'俱乐部发布一个新岗位，你觉得自己能胜任：', opts:[
+    {t:'赛事执行：盯流程、对台本、处理突发', s:{O:2,R:1}},
+    {t:'战队领队：管作息、管行程、管心态', s:{O:1,R:2}},
+    {t:'战队教练：定战术、抠细节、做 BP', s:{D:2,E:1}},
+    {t:'战队运营：拍内容、发微博、搞活动', s:{C:2,E:1}}
+  ]},
+  {q:'你对电竞行业的了解，主要来自：', opts:[
+    {t:'自己打游戏 + 看比赛', s:{T:2}},
+    {t:'刷短视频、二创、专栏', s:{C:2}},
+    {t:'追俱乐部和选手的动态与故事', s:{E:1,C:1}},
+    {t:'看过行业报道、数据和科普', s:{D:2}}
+  ]},
+  {q:'让你连续一个月凌晨 1 点下班，你的态度是：', opts:[
+    {t:'给钱就行，我抗造', s:{R:3}},
+    {t:'短期冲刺可以，长期不行', s:{R:1}},
+    {t:'除非做的是我特别热爱的事', s:{C:1,R:1}},
+    {t:'接受不了，我要规律作息', s:{O:1}}
+  ]},
+  {q:'团队里，你天然的角色是：', opts:[
+    {t:'军师：大家遇到事问我怎么办', s:{D:2,O:1}},
+    {t:'气氛组：没我场子冷', s:{E:2}},
+    {t:'后勤部长：谁都离不开我', s:{O:2}},
+    {t:'输出担当：关键局看我', s:{T:2}}
+  ]},
+  {q:'你对"教别人"的态度是：', opts:[
+    {t:'很擅长，能把复杂的事讲简单', s:{E:2,D:1}},
+    {t:'愿意教，但更想自己先练到顶尖', s:{T:2}},
+    {t:'更喜欢做课程写教案，系统地带人', s:{C:1,O:2}},
+    {t:'没耐心，自己会就行', s:{R:1}}
+  ]},
+  {q:'学校办电竞节拉你帮忙，你选：', opts:[
+    {t:'拉赞助谈商家，把钱和资源搞到位', s:{O:2,E:1}},
+    {t:'设计整个活动流程和现场布置', s:{O:2,C:1}},
+    {t:'负责现场解说和舞台氛围', s:{E:2}},
+    {t:'负责参赛队伍组织和成绩统计', s:{D:2,O:1}}
+  ]},
+  {q:'你的电脑里，更多的是：', opts:[
+    {t:'Excel、表格、数据文件', s:{D:2}},
+    {t:'剪辑软件和素材文件夹', s:{C:2}},
+    {t:'各个群的聊天记录', s:{O:2}},
+    {t:'游戏和直播软件', s:{T:2,E:1}}
+  ]},
+  {q:'被人当面指出错误，你的反应是：', opts:[
+    {t:'先记下来，回头改', s:{D:1,R:1}},
+    {t:'当场讨论清楚，吵明白也行', s:{E:2,O:1}},
+    {t:'有点难受，但知道对方是为我好', s:{R:2}},
+    {t:'嘴上不说，心里较劲下回证明自己', s:{T:2,R:1}}
+  ]},
+  {q:'你理想的工作节奏是：', opts:[
+    {t:'项目制：为大赛忙一阵再歇一阵', s:{O:1,R:2}},
+    {t:'稳定产出：每天有固定的创作任务', s:{C:2}},
+    {t:'跟着赛程走：比赛日疯狂，非赛日复盘', s:{D:1,R:2}},
+    {t:'跟着队伍走：队员在哪我在哪', s:{O:2,R:1}}
+  ]},
+  {q:'如果入行电竞，你最想成为：', opts:[
+    {t:'站在台前的人：解说、主持、选手', s:{E:3}},
+    {t:'站在幕后的人：教练、分析师、领队', s:{D:1,O:1,R:1}},
+    {t:'做内容的人：编剧、剪辑、自媒体', s:{C:3}},
+    {t:'做局的人：搭赛事、谈合作、带团队', s:{O:3}}
+  ]}
+];
+
+var DIRECTIONS = [
+  {name:'赛事运营型', emoji:'🏟️', tagline:'电竞赛事的项目经理',
+   vec:{O:3,R:2,D:2,E:1,C:1,T:0},
+   desc:'你擅长把一堆人、一堆事、一个截止日期，捏合成一场不出差错的比赛。台前看比赛，幕后看流程——观众记住的是名场面，你记住的是每个环节别掉链子。',
+   salaryLow:'5,000–12,000 元/月', salaryHigh:'15,000–35,000 元/月',
+   path:['从校园赛、城市赛的志愿者或执行助理做起，完整跟 2–3 个项目，搞清楚一场比赛从立项到复盘到底有多少环节','补齐硬技能：台本撰写、现场统筹、直播流程对接、供应商管理','带着项目经历跳槽到赛事公司或俱乐部赛事部，往项目经理方向走'],
+   jobs:['赛事执行','赛事策划','现场统筹','直播导播助理'],
+   warn:'比赛日连轴转是常态，但非赛日的枯燥准备才是这份工作的主体。只想看比赛的人撑不过三个月。'},
+  {name:'俱乐部管理型', emoji:'📋', tagline:'战队的大家长',
+   vec:{O:3,R:3,E:1,D:1,C:0,T:0},
+   desc:'你管得住作息、行程和心态。选手在场上拼命，场下的一切归你。一个战队能走多远，往往不取决于明星选手，而取决于有没有一个靠谱的领队。',
+   salaryLow:'6,000–15,000 元/月', salaryHigh:'15,000–30,000 元/月',
+   path:['从俱乐部实习、选手助理切入，先熟悉战队的日常运作节奏','补齐管理类能力：行程管理、心理疏导基础、合同与合规常识','独立带完一个完整赛季，用"没出过乱子"建立行业口碑'],
+   jobs:['战队领队','俱乐部经理','选手经纪','电竞馆运营'],
+   warn:'这是一份"不出事没人看见、出了事全是你的"的工作。抗压能力和细心的权重，高于任何履历光环。'},
+  {name:'解说主持型', emoji:'🎤', tagline:'把比赛讲给千万人听',
+   vec:{E:3,R:2,C:1,O:1,D:0,T:1},
+   desc:'你有表达欲，也控得住场。数据和名场面经你的嘴，才变成观众的记忆。这个岗位离赛场最近，也离"被看见"最近。',
+   salaryLow:'4,000–15,000 元/月', salaryHigh:'30 万+/年（头部）',
+   path:['先接校内比赛、小型赛事的解说，把作品集攒起来（10 段以上）','系统练游戏理解：版本改动、BP 逻辑、战术术语，一个都不能含糊','报解说主持培训班（如竞麦大师营）或从平台二路解说混脸熟，等官方选拔窗口'],
+   jobs:['官方解说','赛事主持','采访记者','二路主播'],
+   warn:'游戏理解和表达能力是两条腿，瘸一条都走不远。外形和嗓音是加分项，不是必选项。'},
+  {name:'内容创作型', emoji:'🎬', tagline:'电竞圈的内容生产者',
+   vec:{C:3,E:2,R:1,O:1,D:0,T:0},
+   desc:'你能把比赛剪成让人上头的内容。行业需要内容就像需要空气——俱乐部、赛事方、平台都在抢能持续产出的人。',
+   salaryLow:'5,000–10,000 元/月', salaryHigh:'15,000–25,000 元/月',
+   path:['自学 PR / 剪映，先做一个自己的账号：什么火做什么，用数据说话','带着作品集应聘俱乐部或 MCN 的内容岗，作品集里必须有一条数据能打的','从执行剪辑往内容策划、编导方向走，别停在纯工具人'],
+   jobs:['视频剪辑','内容策划','自媒体运营','文案编剧'],
+   warn:'"会剪片子"的人很多，"剪过爆款"的人很少。面试时没人关心你会什么软件，只关心你做出过什么数据。'},
+  {name:'数据分析型', emoji:'📊', tagline:'用数字看比赛的人',
+   vec:{D:3,R:2,T:1,O:1,C:0,E:0},
+   desc:'别人看热闹，你看门道。一份好的数据报告能改变一个队伍的 BP，也能让一场比赛的解说更有料。行业越职业化，这个岗位越值钱。',
+   salaryLow:'8,000–15,000 元/月', salaryHigh:'15,000–25,000 元/月',
+   path:['学 SQL + Excel + 可视化工具，用公开赛数据做分析报告，发出去让人看到','从俱乐部实习分析师或第三方数据机构起步，接触真实业务数据','往战术分析师、教练组方向走，离决策越近越不可替代'],
+   jobs:['数据分析师','战术分析师','赛事数据专员'],
+   warn:'技术只是入场券，游戏理解才是天花板。纯工具人最容易被替代，能对 BP 发言的分析师才有议价权。'},
+  {name:'青训教练型', emoji:'🎯', tagline:'职业选手的幕后教练',
+   vec:{D:2,E:2,R:2,T:1,O:1,C:0},
+   desc:'你既懂游戏又讲得清，能把高手的直觉翻译成可训练的动作。选手拿成绩，教练拿功劳簿——这是幕后岗位上离冠军最近的一个。',
+   salaryLow:'10,000–15,000 元/月', salaryHigh:'30 万+/年（头部）',
+   path:['先打到高分段：这不是可选项，是门票（服务器前 1%）','从青训营助教、线上教练做起，积累真实执教履历','参加电子竞技员职业技能培训与等级认定，往俱乐部教练组走'],
+   jobs:['青训教练','战队助教','战术指导','线上教练'],
+   warn:'打得好 ≠ 教得好。教练的核心能力是表达和因材施教，不是操作。很多高分玩家转型教练后折戟，就是没转过这个弯。'},
+  {name:'商务招商型', emoji:'🤝', tagline:'电竞行业的生意人',
+   vec:{O:2,E:3,D:1,C:1,R:1,T:0},
+   desc:'你懂比赛，也谈得了钱。俱乐部能不能活下去、赛事能不能办起来，很大程度上取决于这个岗位能拉来多少资源。',
+   salaryLow:'5,000–12,000 元/月 + 提成', salaryHigh:'15,000 元起，上不封顶',
+   path:['从商务助理、赞助执行做起，先搞清一个赞助产品的完整结构','积累品牌方资源，独立完成 1–2 个签约案例（哪怕很小）','往商务总监走；或者等资源够了，自己开经纪或活动公司'],
+   jobs:['商务 BD','赞助执行','品牌合作','活动招商'],
+   warn:'这是最"看资源"的岗位：没资源靠执行能力起步，有资源可以直接跳过前两步。前两年收入方差极大，心态要稳。'},
+  {name:'电竞教育型', emoji:'📚', tagline:'培养下一个行业的人',
+   vec:{C:2,E:2,O:2,D:1,R:1,T:0},
+   desc:'你擅长把知识讲给别人听，还有耐心。行业越正规，"会教的人"越值钱——全国 54 所以上高校开了电竞专业，师资缺口是真实的。',
+   salaryLow:'6,000–15,000 元/月', salaryHigh:'15,000–25,000 元/月',
+   path:['考证：电子竞技员已纳入国家职业资格体系，可参加培训与职业技能等级认定','从教育机构助教、教研岗做起，同时积累行业案例','走校企合作路线（与竞麦、爱电竞等模式），或读研进高校任教'],
+   jobs:['电竞讲师','课程教研','校企合作专员','课程顾问'],
+   warn:'行业调整期，教育机构本身在洗牌。选平台比选岗位更重要——优先选有官方背书、有稳定高校合作的机构。'}
+];
+
+/* ================= 配置与存储层 =================
+   生产模式：读 config.js → 调 Supabase RPC（密码在服务端校验，不可绕过）
+   演示模式：config.js 未填 → 退回 localStorage（仅本地测试用）
+================================================= */
+var CFG = null;
+try{
+  var c = window.BL_CONFIG;
+  if(c && c.url && c.anon && c.url.indexOf('YOUR-') !== 0 && c.anon.indexOf('YOUR-') !== 0){
+    CFG = {url: c.url.replace(/\/+$/,''), anon: c.anon};
+  }
+}catch(e){}
+var PROD = !!CFG;
+
+function sbRpc(name, args){
+  return fetch(CFG.url + '/rest/v1/rpc/' + name, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': CFG.anon,
+      'Authorization': 'Bearer ' + CFG.anon
+    },
+    body: JSON.stringify(args || {})
+  }).then(function(r){
+    return r.json().then(function(j){
+      if(!r.ok){ throw new Error((j && j.message) || ('HTTP ' + r.status)); }
+      return j;
+    });
+  });
+}
+
+/* 演示模式本地存储 */
+function DB(k, d){ try{ var v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); }catch(e){ return d; } }
+function DBS(k, v){ localStorage.setItem(k, JSON.stringify(v)); }
+function pwDB(){ return DB('bl_pw', []); }
+function setPwDB(v){ DBS('bl_pw', v); }
+function logDB(){ return DB('bl_log', []); }
+function sess(){ return DB('bl_sess', null); }
+function setSess(v){ DBS('bl_sess', v); }
+function adminToken(){ return DB('bl_admin_token', ''); }
+function setAdminToken(v){ DBS('bl_admin_token', v); }
+
+var Store = {
+  prod: PROD,
+
+  verify: function(code){
+    if(PROD){
+      return sbRpc('verify_card', {p_code: code});
+    }
+    return new Promise(function(res){
+      var db = pwDB(), hit = null, v = code.toUpperCase();
+      for(var i=0;i<db.length;i++){ if(db[i].code === v){ hit = db[i]; break; } }
+      if(!hit) return res({ok:false, msg:'密码无效，请检查后重试'});
+      if(hit.left <= 0) return res({ok:false, msg:'该密码次数已用完，请购买新密码'});
+      res({ok:true, left:hit.left});
+    });
+  },
+
+  finish: function(code, dir, score, pct){
+    if(PROD){
+      return sbRpc('finish_test', {p_code: code, p_dir: dir, p_score: score, p_pct: pct});
+    }
+    return new Promise(function(res){
+      if(!code || code === 'DEMO') return res({ok:true, left:-1, demo:true});
+      var db = pwDB(), left = 0, found = false;
+      for(var i=0;i<db.length;i++){
+        if(db[i].code === code){
+          db[i].left = Math.max(0, db[i].left - 1);
+          db[i].used = (db[i].used || 0) + 1;
+          setPwDB(db); left = db[i].left; found = true; break;
+        }
+      }
+      var log = logDB();
+      log.push({ts: Date.now(), code: code, dir: dir, score: score});
+      DBS('bl_log', log);
+      res(found ? {ok:true, left:left} : {ok:false, msg:'密码无效'});
+    });
+  },
+
+  adminGen: function(token, count, limit, prefix){
+    if(PROD){
+      return sbRpc('admin_gen_cards', {p_token: token, p_count: count, p_limit: limit, p_prefix: prefix || ''});
+    }
+    return new Promise(function(res){
+      var db = pwDB(), exist = {};
+      db.forEach(function(c2){ exist[c2.code] = 1; });
+      var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', added = 0, out = [];
+      while(added < count){
+        var code = (prefix || '').toUpperCase();
+        for(var i=0;i<8;i++){ code += chars.charAt(Math.floor(Math.random() * chars.length)); }
+        if(exist[code]) continue;
+        exist[code] = 1;
+        db.push({code:code, left:limit, total:limit, used:0, created:new Date().toLocaleString('zh-CN')});
+        out.push(code); added++;
+      }
+      setPwDB(db);
+      res({ok:true, codes:out});
+    });
+  },
+
+  adminList: function(token){
+    if(PROD){
+      return sbRpc('admin_list_cards', {p_token: token}).then(function(j){
+        if(j && j.ok === false) return j;
+        return {ok:true, cards: j};
+      });
+    }
+    return new Promise(function(res){
+      res({ok:true, cards: pwDB().slice().reverse()});
+    });
+  },
+
+  adminStats: function(token){
+    if(PROD){
+      return sbRpc('admin_stats', {p_token: token});
+    }
+    return new Promise(function(res){
+      var db = pwDB(), log = logDB(), left = 0;
+      db.forEach(function(c2){ left += c2.left; });
+      res({ok:true, codes:db.length, tests:log.length, left:left});
+    });
+  },
+
+  changeToken: function(oldT, newT){
+    if(PROD){
+      return sbRpc('admin_change_token', {p_old: oldT, p_new: newT});
+    }
+    return new Promise(function(res){ res({ok:true}); });
+  }
+};
+
+/* ================= 通用 ================= */
+function show(id){
+  document.querySelectorAll('.screen').forEach(function(el){el.classList.remove('active');});
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+var toastTimer = null;
+function toast(msg, ms){
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ t.classList.remove('show'); }, ms || 2200);
+}
+function copyText(text, okMsg){
+  function done(){ toast(okMsg || '已复制'); }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done).catch(function(){ fallback(); });
+  } else { fallback(); }
+  function fallback(){
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try{ document.execCommand('copy'); done(); }
+    catch(e){ toast('复制失败，请手动长按选择复制'); }
+    document.body.removeChild(ta);
+  }
+}
+
+/* ================= 密码 ================= */
+function checkPw(){
+  var v = document.getElementById('pw-input').value.trim().toUpperCase();
+  var err = document.getElementById('pw-err');
+  var btn = document.getElementById('pw-btn');
+  if(!v){ err.textContent = '请输入密码'; return; }
+  err.textContent = '验证中…';
+  btn.disabled = true;
+  Store.verify(v).then(function(r){
+    btn.disabled = false;
+    if(r && r.ok){
+      setSess({code: v, left: r.left, demo: false});
+      err.textContent = '';
+      document.getElementById('pw-input').value = '';
+      enterCover();
+    } else {
+      err.textContent = (r && r.msg) || '密码无效，请检查后重试';
+    }
+  }).catch(function(){
+    btn.disabled = false;
+    err.textContent = '网络异常，请稍后重试';
+  });
+}
+
+function enterCover(){
+  var s = sess();
+  var badge = document.getElementById('left-badge');
+  badge.innerHTML = s ? '当前密码剩余 <b>' + s.left + '</b> 次测评机会' : '';
+  show('screen-cover');
+}
+
+function gotoPw(){
+  location.hash = '';
+  setSess(null);
+  show('screen-pw');
+}
+
+/* ================= 测评 ================= */
+var cur = 0;
+var answers = new Array(QUESTIONS.length).fill(null);
+var lastResult = null;
+
+function startQuiz(){
+  cur = 0;
+  answers = new Array(QUESTIONS.length).fill(null);
+  renderQ();
+  show('screen-quiz');
+}
+
+function renderQ(){
+  var q = QUESTIONS[cur];
+  document.getElementById('progress-num').textContent = '第 ' + (cur+1) + ' / ' + QUESTIONS.length + ' 题';
+  document.getElementById('progress-fill').style.width = (cur / QUESTIONS.length * 100) + '%';
+  document.getElementById('q-text').textContent = q.q;
+  document.getElementById('back-btn').style.visibility = cur === 0 ? 'hidden' : 'visible';
+  var box = document.getElementById('q-options');
+  box.innerHTML = '';
+  var letters = ['A','B','C','D'];
+  q.opts.forEach(function(o, i){
+    var div = document.createElement('div');
+    div.className = 'opt' + (answers[cur] === i ? ' selected' : '');
+    div.innerHTML = '<div class="opt-letter">' + letters[i] + '</div><div class="opt-text">' + o.t + '</div>';
+    div.onclick = function(){ pick(i); };
+    box.appendChild(div);
+  });
+}
+
+function pick(i){
+  answers[cur] = i;
+  renderQ();
+  setTimeout(function(){
+    if(cur < QUESTIONS.length - 1){ cur++; renderQ(); }
+    else { finish(); }
+  }, 220);
+}
+
+function prevQ(){
+  if(cur > 0){ cur--; renderQ(); }
+}
+
+function maxPerDim(){
+  var max = {};
+  DIMS.forEach(function(d){ max[d.key] = 0; });
+  QUESTIONS.forEach(function(q){
+    var perQ = {};
+    DIMS.forEach(function(d){ perQ[d.key] = 0; });
+    q.opts.forEach(function(o){
+      for(var k in o.s){ if(o.s[k] > perQ[k]) perQ[k] = o.s[k]; }
+    });
+    for(var k in perQ){ max[k] += perQ[k]; }
+  });
+  return max;
+}
+
+function computeDims(){
+  var raw = {};
+  DIMS.forEach(function(d){ raw[d.key] = 0; });
+  answers.forEach(function(a, qi){
+    if(a === null) return;
+    var s = QUESTIONS[qi].opts[a].s;
+    for(var k in s){ raw[k] += s[k]; }
+  });
+  var mx = maxPerDim();
+  var pct = {};
+  DIMS.forEach(function(d){
+    pct[d.key] = mx[d.key] ? Math.round(raw[d.key] / mx[d.key] * 100) : 0;
+  });
+  return pct;
+}
+
+function matchDirs(pct){
+  return DIRECTIONS.map(function(d){
+    var num = 0, den = 0;
+    for(var k in d.vec){ num += pct[k] * d.vec[k]; den += d.vec[k]; }
+    return {dir:d, score: Math.round(num / den)};
+  }).sort(function(a,b){ return b.score - a.score; });
+}
+
+function finish(){
+  var pct = computeDims();
+  var ranked = matchDirs(pct);
+  var top = ranked[0], second = ranked[1];
+  lastResult = {pct:pct, top:top, second:second, date: new Date().toLocaleDateString('zh-CN')};
+  var s = sess();
+  var code = (s && !s.demo) ? s.code : 'DEMO';
+
+  /* 先提交（扣次数），成功后再渲染结果；网络失败自动重试一次 */
+  var attempt = function(retry){
+    return Store.finish(code, top.dir.name, top.score, pct).then(function(r){
+      var left = (r && r.ok) ? r.left : null;
+      if(r && r.ok && s && !s.demo && left >= 0){ s.left = left; setSess(s); }
+      renderResultPage(top, second, pct, left);
+      show('screen-result');
+    }).catch(function(){
+      if(retry) return attempt(false);
+      renderResultPage(top, second, pct, null);
+      show('screen-result');
+    });
+  };
+  attempt(true);
+}
+
+function renderResultPage(top, second, pct, left){
+  renderResult('r', top, second, pct);
+  var out = document.getElementById('used-out');
+  if(left === null || left === undefined){
+    out.textContent = '次数扣减异常，请截图本页联系客服补登';
+    out.style.color = '#f87171';
+  } else if(left < 0){
+    out.textContent = '';
+  } else {
+    out.textContent = '本密码剩余 ' + left + ' 次测评机会' + (left === 0 ? '，已用完，请购买新密码' : '');
+    out.style.color = '#fbbf24';
+  }
+}
+
+function renderResult(prefix, top, second, pct){
+  document.getElementById(prefix+'-emoji').textContent = top.dir.emoji;
+  document.getElementById(prefix+'-name').textContent = top.dir.name;
+  document.getElementById(prefix+'-tagline').textContent = top.dir.tagline;
+  document.getElementById(prefix+'-match').textContent = '匹配度 ' + top.score + '%';
+  if(prefix === 'r'){
+    document.getElementById('r-desc').textContent = top.dir.desc;
+    document.getElementById('r-salary-low').textContent = top.dir.salaryLow;
+    document.getElementById('r-salary-high').textContent = top.dir.salaryHigh;
+    document.getElementById('r-second-emoji').textContent = second.dir.emoji;
+    document.getElementById('r-second-name').textContent = '次优方向：' + second.dir.name;
+    document.getElementById('r-second-desc').textContent = second.dir.tagline + '（匹配度 ' + second.score + '%）';
+    var pathBox = document.getElementById('r-path');
+    pathBox.innerHTML = '';
+    top.dir.path.forEach(function(p, i){
+      var div = document.createElement('div');
+      div.className = 'path-step';
+      div.innerHTML = '<div class="path-n">' + (i+1) + '</div><div class="path-t">' + p + '</div>';
+      pathBox.appendChild(div);
+    });
+    var jobBox = document.getElementById('r-jobs');
+    jobBox.innerHTML = '';
+    top.dir.jobs.forEach(function(j){
+      var sp = document.createElement('span');
+      sp.className = 'job-chip';
+      sp.textContent = j;
+      jobBox.appendChild(sp);
+    });
+    document.getElementById('r-warn').textContent = '⚠️ ' + top.dir.warn;
+  }
+  var radar = document.getElementById(prefix+'-radar');
+  var cx = 130, cy = 130, R = 92;
+  var n = DIMS.length;
+  var angle = function(i){ return -Math.PI/2 + i * 2*Math.PI/n; };
+  var pt = function(i, r){ return [cx + r*Math.cos(angle(i)), cy + r*Math.sin(angle(i))]; };
+  var svg = '<svg width="260" height="260" viewBox="0 0 260 260">';
+  [0.25,0.5,0.75,1].forEach(function(f){
+    var pts = [];
+    for(var i=0;i<n;i++){ var p = pt(i, R*f); pts.push(p[0].toFixed(1)+','+p[1].toFixed(1)); }
+    svg += '<polygon points="' + pts.join(' ') + '" fill="none" stroke="#26315c" stroke-width="1"/>';
+  });
+  for(var i=0;i<n;i++){
+    var p = pt(i, R);
+    svg += '<line x1="'+cx+'" y1="'+cy+'" x2="'+p[0].toFixed(1)+'" y2="'+p[1].toFixed(1)+'" stroke="#26315c" stroke-width="1"/>';
+  }
+  var vPts = [];
+  for(var i=0;i<n;i++){
+    var v = pct[DIMS[i].key] / 100;
+    var p = pt(i, R * Math.max(v, 0.04));
+    vPts.push(p[0].toFixed(1)+','+p[1].toFixed(1));
+  }
+  svg += '<polygon points="' + vPts.join(' ') + '" fill="rgba(34,211,238,.22)" stroke="#22d3ee" stroke-width="2"/>';
+  for(var i=0;i<n;i++){
+    var v = pct[DIMS[i].key] / 100;
+    var p = pt(i, R * Math.max(v, 0.04));
+    svg += '<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="3" fill="#22d3ee"/>';
+    var lp = pt(i, R + 20);
+    svg += '<text x="'+lp[0].toFixed(1)+'" y="'+(lp[1]+4).toFixed(1)+'" text-anchor="middle" font-size="11.5" fill="#a8b4d8">'+DIMS[i].name+'</text>';
+  }
+  svg += '</svg>';
+  radar.innerHTML = svg;
+  if(prefix === 'r'){
+    var dimBox = document.getElementById('r-dims');
+    dimBox.innerHTML = '';
+    DIMS.forEach(function(d){
+      var v = pct[d.key];
+      var row = document.createElement('div');
+      row.className = 'dim-row';
+      row.innerHTML = '<div class="dim-name">'+d.name+'</div><div class="dim-bar"><div class="dim-fill" style="width:'+v+'%"></div></div><div class="dim-val">'+v+'</div>';
+      dimBox.appendChild(row);
+    });
+  }
+}
+
+function restart(){
+  var s = sess();
+  if(s && !s.demo && s.left <= 0){
+    toast('次数已用完，请购买新密码');
+    setTimeout(gotoPw, 900);
+    return;
+  }
+  startQuiz();
+}
+
+/* ================= 分享 ================= */
+function copyShareLink(){
+  var r = lastResult;
+  if(!r) return;
+  var idx = DIRECTIONS.indexOf(r.top.dir);
+  var payload = btoa(unescape(encodeURIComponent(JSON.stringify({
+    d: idx, s: r.top.score, p: r.pct
+  }))));
+  var url = location.href.split('#')[0] + '#s=' + payload;
+  copyText(url, '链接已复制，发给朋友即可');
+}
+
+function showShareView(){
+  try{
+    var payload = location.hash.replace('#s=', '');
+    var data = JSON.parse(decodeURIComponent(escape(atob(payload))));
+    var dir = DIRECTIONS[data.d];
+    if(!dir) throw new Error('bad');
+    var second = null;
+    var ranked = matchDirs(data.p);
+    for(var i=0;i<ranked.length;i++){ if(ranked[i].dir !== dir){ second = ranked[i]; break; } }
+    renderResult('sh', {dir:dir, score:data.s}, second, data.p);
+    show('screen-share');
+    return true;
+  }catch(e){
+    return false;
+  }
+}
+
+/* ================= 好评有礼 ================= */
+function reviewGift(){
+  var r = lastResult;
+  if(!r) return;
+  var text = '我在「百乐」做了电竞职业方向测评，测出来我是【' + r.top.dir.name + '】：' + r.top.dir.tagline +
+    '。题目挺有意思，结果分析也挺实在，推荐给想进电竞行业的朋友。';
+  copyText(text, '好评文案已复制，去店铺粘贴即可');
+  setTimeout(function(){
+    toast('具体返礼活动请先确认平台规则后再上线', 3000);
+  }, 2400);
+}
+
+/* ================= 长图 ================= */
+function wrapText(ctx, text, x, y, maxW, lineH){
+  var line = '', lines = [];
+  for(var i=0;i<text.length;i++){
+    var ch = text[i];
+    if(ctx.measureText(line + ch).width > maxW){ lines.push(line); line = ch; }
+    else { line += ch; }
+  }
+  if(line) lines.push(line);
+  lines.forEach(function(l){ ctx.fillText(l, x, y); y += lineH; });
+  return y;
+}
+
+function makeLongImage(){
+  var r = lastResult;
+  if(!r) return;
+  var W = 750, H = 1900;
+  var cv = document.createElement('canvas');
+  cv.width = W; cv.height = H;
+  var ctx = cv.getContext('2d');
+  var d = r.top.dir;
+
+  var g = ctx.createLinearGradient(0,0,W,H);
+  g.addColorStop(0,'#0b1020'); g.addColorStop(0.55,'#14204a'); g.addColorStop(1,'#1a1140');
+  ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+  ctx.globalAlpha = 0.16;
+  var rg = ctx.createRadialGradient(W/2, 300, 10, W/2, 300, 430);
+  rg.addColorStop(0,'#22d3ee'); rg.addColorStop(1,'rgba(34,211,238,0)');
+  ctx.fillStyle = rg; ctx.fillRect(0,0,W,H);
+  ctx.globalAlpha = 1;
+
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#a8b4d8';
+  ctx.font = '600 25px sans-serif';
+  ctx.fillText('百乐 BAiLE · 电竞职业方向测评', W/2, 80);
+
+  ctx.fillStyle = '#eef2ff';
+  ctx.font = '800 40px sans-serif';
+  ctx.fillText('你在电竞行业的位置是', W/2, 225);
+
+  ctx.font = '84px sans-serif';
+  ctx.fillText(d.emoji, W/2, 355);
+  ctx.fillStyle = '#eef2ff';
+  ctx.font = '800 60px sans-serif';
+  ctx.fillText(d.name, W/2, 452);
+  ctx.fillStyle = '#22d3ee';
+  ctx.font = '600 28px sans-serif';
+  ctx.fillText(d.tagline, W/2, 502);
+  ctx.strokeStyle = 'rgba(34,211,238,.5)'; ctx.lineWidth = 2;
+  roundRect(ctx, W/2-125, 545, 250, 60, 30); ctx.stroke();
+  ctx.fillStyle = '#22d3ee';
+  ctx.font = '700 28px sans-serif';
+  ctx.fillText('匹配度 ' + r.top.score + '%', W/2, 584);
+
+  var cx = W/2, cy = 800, R = 115, n = DIMS.length;
+  var ang = function(i){ return -Math.PI/2 + i*2*Math.PI/n; };
+  var pt = function(i, rr){ return [cx + rr*Math.cos(ang(i)), cy + rr*Math.sin(ang(i))]; };
+  [0.25,0.5,0.75,1].forEach(function(f){
+    var pts = [];
+    for(var i=0;i<n;i++){ var p = pt(i, R*f); pts.push(p[0]+','+p[1]); }
+    ctx.beginPath();
+    pts.forEach(function(s, i){ var a = s.split(','); if(i===0) ctx.moveTo(a[0],a[1]); else ctx.lineTo(a[0],a[1]); });
+    ctx.closePath(); ctx.strokeStyle = 'rgba(168,180,216,.35)'; ctx.lineWidth = 1; ctx.stroke();
+  });
+  var vPts = [];
+  for(var i=0;i<n;i++){
+    var v = r.pct[DIMS[i].key]/100;
+    vPts.push(pt(i, R*Math.max(v,0.04)));
+  }
+  ctx.beginPath();
+  vPts.forEach(function(p, i){ if(i===0) ctx.moveTo(p[0],p[1]); else ctx.lineTo(p[0],p[1]); });
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(34,211,238,.25)'; ctx.fill();
+  ctx.strokeStyle = '#22d3ee'; ctx.lineWidth = 2.5; ctx.stroke();
+  ctx.fillStyle = '#a8b4d8'; ctx.font = '500 19px sans-serif';
+  for(var i=0;i<n;i++){
+    var lp = pt(i, R+32);
+    ctx.fillText(DIMS[i].name + ' ' + r.pct[DIMS[i].key], lp[0], lp[1]+6);
+  }
+
+  var y = 1010;
+  ctx.textAlign = 'left';
+  ctx.fillStyle = '#22d3ee'; ctx.font = '700 30px sans-serif';
+  ctx.fillText('真实薪资区间', 70, y);
+  ctx.textAlign = 'center';
+  ctx.font = '600 25px sans-serif'; ctx.fillStyle = '#fbbf24';
+  ctx.fillText('入门 ' + d.salaryLow + '    资深 ' + d.salaryHigh, W/2, y + 48);
+
+  y += 110;
+  ctx.textAlign = 'left';
+  ctx.fillStyle = '#22d3ee'; ctx.font = '700 30px sans-serif';
+  ctx.fillText('入行路径 · 三步走', 70, y);
+  y += 22;
+  d.path.forEach(function(p, i){
+    y += 42;
+    ctx.fillStyle = '#22d3ee'; ctx.font = '800 24px sans-serif';
+    ctx.fillText((i+1) + '.', 70, y);
+    ctx.fillStyle = '#dbe4ff'; ctx.font = '400 23px sans-serif';
+    y = wrapText(ctx, p, 108, y, W - 108 - 60, 34) - 34;
+  });
+
+  y += 66;
+  ctx.fillStyle = '#22d3ee'; ctx.font = '700 30px sans-serif';
+  ctx.fillText('对口岗位', 70, y);
+  y += 44;
+  ctx.fillStyle = '#a8b4d8'; ctx.font = '400 23px sans-serif';
+  y = wrapText(ctx, d.jobs.join(' · '), 70, y, W - 140, 34) - 34;
+
+  y += 66;
+  ctx.fillStyle = 'rgba(251,191,36,.14)';
+  roundRect(ctx, 60, y - 40, W - 120, 130, 14); ctx.fill();
+  ctx.fillStyle = '#f5d98b'; ctx.font = '400 22px sans-serif';
+  wrapText(ctx, '⚠ ' + d.warn, 84, y, W - 168, 33);
+
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#eef2ff'; ctx.font = '700 32px sans-serif';
+  ctx.fillText('3 分钟，找到你在电竞行业的位置', W/2, 1770);
+  ctx.fillStyle = '#6b78a3'; ctx.font = '400 22px sans-serif';
+  ctx.fillText('长按识别 / 扫码测一测 · 结果仅供参考，不构成职业承诺', W/2, 1812);
+  ctx.fillStyle = '#6b78a3'; ctx.font = '400 21px sans-serif';
+  ctx.fillText(r.date, W/2, 1856);
+
+  document.getElementById('poster-img').src = cv.toDataURL('image/png');
+  document.getElementById('poster-mask').classList.add('show');
+}
+
+function roundRect(ctx, x, y, w, h, r){
+  ctx.beginPath();
+  ctx.moveTo(x+r, y);
+  ctx.arcTo(x+w, y, x+w, y+h, r);
+  ctx.arcTo(x+w, y+h, x, y+h, r);
+  ctx.arcTo(x, y+h, x, y, r);
+  ctx.arcTo(x, y, x+w, y, r);
+  ctx.closePath();
+}
+
+function closePoster(){
+  document.getElementById('poster-mask').classList.remove('show');
+}
+
+/* ================= 管理后台 ================= */
+function adminLogin(){
+  var v = document.getElementById('admin-token').value.trim();
+  if(!v){ toast('请输入管理口令'); return; }
+  setAdminToken(v);
+  document.getElementById('admin-login').style.display = 'none';
+  document.getElementById('admin-body').style.display = 'block';
+  refreshAdmin();
+}
+
+function refreshAdmin(){
+  var token = adminToken();
+  Store.adminStats(token).then(function(r){
+    if(r && r.ok){
+      document.getElementById('st-codes').textContent = r.codes;
+      document.getElementById('st-tests').textContent = r.tests;
+      document.getElementById('st-left').textContent = r.left;
+    } else {
+      toast((r && r.msg) || '口令错误，请重新进入');
+      adminLogout();
+    }
+  }).catch(function(){ toast('网络异常'); });
+  Store.adminList(token).then(function(r){
+    var tb = document.getElementById('code-tbody');
+    tb.innerHTML = '';
+    if(r && r.ok && r.cards && r.cards.length){
+      r.cards.forEach(function(c, i){
+        var tr = document.createElement('tr');
+        tr.innerHTML = '<td>' + (i+1) + '</td><td class="c">' + c.code + '</td><td>' + c.left + ' / ' + c.total + '</td><td>' + (c.used||0) + '</td><td>' + (c.created_at || c.created || '') + '</td>';
+        tb.appendChild(tr);
+      });
+    } else if(r && r.ok === false){
+      toast(r.msg || '口令错误');
+      adminLogout();
+    }
+  }).catch(function(){ toast('网络异常'); });
+}
+
+function adminLogout(){
+  setAdminToken('');
+  document.getElementById('admin-login').style.display = 'block';
+  document.getElementById('admin-body').style.display = 'none';
+}
+
+function genCodes(){
+  var count = parseInt(document.getElementById('gen-count').value) || 10;
+  var limit = parseInt(document.getElementById('gen-limit').value) || 3;
+  var prefix = (document.getElementById('gen-prefix').value || '').trim();
+  Store.adminGen(adminToken(), count, limit, prefix).then(function(r){
+    if(r && r.ok){
+      toast('已生成 ' + (r.codes ? r.codes.length : count) + ' 个卡密');
+      refreshAdmin();
+    } else {
+      toast((r && r.msg) || '生成失败');
+    }
+  }).catch(function(){ toast('网络异常，生成失败'); });
+}
+
+function exportCSV(){
+  var token = adminToken();
+  Store.adminList(token).then(function(r){
+    if(!r || !r.ok || !r.cards || !r.cards.length){ toast('暂无卡密'); return; }
+    var csv = '\ufeff卡密,剩余次数,总限次,已用次数,创建时间\n';
+    r.cards.forEach(function(c){
+      csv += c.code + ',' + c.left + ',' + c.total + ',' + (c.used||0) + ',' + (c.created_at || c.created || '') + '\n';
+    });
+    var blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = '百乐测评卡密_' + new Date().toISOString().slice(0,10) + '.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    toast('CSV 已导出');
+  }).catch(function(){ toast('导出失败'); });
+}
+
+function changeToken(){
+  var oldT = adminToken();
+  var v = prompt('输入新管理口令（至少 8 位，建议字母+数字混合）');
+  if(!v) return;
+  if(v.length < 8){ toast('至少 8 位'); return; }
+  Store.changeToken(oldT, v).then(function(r){
+    if(r && r.ok){
+      setAdminToken(v);
+      toast('口令已修改，请牢记新口令');
+    } else {
+      toast((r && r.msg) || '修改失败');
+    }
+  }).catch(function(){ toast('网络异常'); });
+}
+
+/* ================= 启动 ================= */
+(function init(){
+  /* 未配置 Supabase 时给出醒目警告（防止误以为已上线） */
+  if(!PROD){
+    var pw = document.getElementById('screen-pw');
+    var w = document.createElement('div');
+    w.className = 'cfg-warn';
+    w.textContent = '⚠ 未检测到 Supabase 配置（config.js 未填写）。当前为本地演示模式：买家密码不会生效。请按《上线部署操作手册》完成第 1-4 步。';
+    pw.insertBefore(w, pw.children[1]);
+  }
+
+  if(location.hash.indexOf('#s=') === 0){
+    if(showShareView()) return;
+  }
+  if(location.hash.indexOf('#admin') === 0){
+    show('screen-admin');
+    return;
+  }
+  var s = sess();
+  if(s && PROD && !s.demo){
+    /* 生产模式：回连时静默重新验证密码，刷新剩余次数 */
+    Store.verify(s.code).then(function(r){
+      if(r && r.ok){ s.left = r.left; setSess(s); enterCover(); }
+      else { setSess(null); show('screen-pw'); }
+    }).catch(function(){ enterCover(); });
+  } else if(s && (s.demo || s.left > 0)){
+    enterCover();
+  } else {
+    show('screen-pw');
+  }
+})();
+</script>
+</body>
+</html>
